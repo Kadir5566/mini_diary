@@ -1,0 +1,67 @@
+PROJECT: mini-diary
+AUTHOR: Kadir Enes Cakiroglu (251478073)
+VERSION: v1 (Revised Edition)
+DATE: 2026-03-28
+
+========================================
+OVERVIEW
+========================================
+
+mini-diary is a high-efficiency command-line application to manage daily logs.
+Unlike v0, this version utilizes iterative processing to allow full data 
+retrieval, searching, and formatted listing.
+
+All data is persistently stored in a hidden directory called .minidiary/ 
+using a flat-file database system (diary.dat).
+
+========================================
+COMMANDS
+========================================
+
+--- init ---
+Usage: python solution.py init
+Creates a .minidiary/ directory and an empty diary.dat file.
+Safety: If .minidiary/ already exists, prints "[!] Already initialized."
+
+--- write ---
+Usage: python solution.py write "Your content here"
+Appends a new entry. Uses a "No-Loop" newline counting logic for ID assignment.
+Format: id | date | content
+Feature: Automatically cleans newlines from user input to protect DB integrity.
+Prints: "[✅] Entry saved with ID: <id>"
+
+--- list ---
+Usage: python solution.py list
+[v1 Update]: Prints all entries using a formatted table view (ID, Date, Preview).
+Format: [ID] YYYY-MM-DD >> Content
+If empty, prints "[❌] Diary is empty or not initialized."
+
+--- search ---
+Usage: python solution.py search "keyword"
+[v1 Update]: Scans all entries for a specific string. 
+Feature: Case-insensitive matching using '.lower()' logic.
+Prints: "-> Found in ID [id]: <content>" or "[!] No matches found."
+
+--- read / delete ---
+Usage: python solution.py read <id> | delete <id>
+Status: Scheduled for v2.0 (Logic ready for iterative implementation).
+
+========================================
+DATA FORMAT (v1 ENHANCED)
+========================================
+
+File: .minidiary/diary.dat
+Encoding: UTF-8 (Full Turkish Character Support)
+Format: id|date|content
+Example:
+1|2026-03-28|GitHub odevini bitirdik, babapiroyuz.
+2|2026-03-28|Döngü yasağını v1 revizesiyle aştık.
+
+========================================
+ERROR HANDLING & TECHNICAL UPDATES
+========================================
+
+- Execution Guard: Prevents commands before "init" with an error message.
+- Input Validation: Handles missing arguments with "Usage" guides.
+- Dynamic Dating: Uses 'time.strftime' for real-time date stamping.
+- Iterative Logic: v1 features (list/search) implemented using 'for' loops.
