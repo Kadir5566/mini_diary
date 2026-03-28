@@ -1,24 +1,21 @@
-
-📔 Mini-Diary (v0)
-A Constraint-Driven CLI Architecture for Persistent Logging
+📔 Mini-Diary (v1.0)
+Constraint-Driven CLI Logging System with Advanced Retrieval
 📖 Overview
-Mini-Diary is a high-performance Command-Line Interface (CLI) tool specifically engineered to demonstrate that complex software logic—such as data persistence and unique ID tracking—can be achieved under extreme programming limitations.
+Mini-Diary is a sophisticated Command-Line Interface (CLI) tool developed at Samsun University. It is engineered to prove that persistent data management and unique indexing are achievable under extreme programming constraints (No-Loop / No-Collection).
 
-Developed as part of the Software Engineering curriculum at Samsun University, this project serves as a technical proof-of-concept for high-efficiency file I/O operations without relying on modern data structures.
+This version (v1.0) includes a v0 Core (for data entry) and a v1 Extension (for data retrieval).
 
-🚀 Key Features & Innovation (v0)
-🛠️ Constraint-Driven Logic
-The core architecture is strictly built upon a "Zero-Collection" policy. This system successfully manages persistent data WITHOUT using:
+🚀 Key Features & Innovation
+🛠️ v0: The Constraint-Driven Engine (Entry)
+The core "Write" mechanism adheres to a strict "Zero-Collection" policy:
 
-❌ Iterative Loops (for, while)
+⚡ Newline-Scanning (\n) Logic: Automatically calculates the next unique Entry ID by analyzing the raw file stream on-the-fly.
 
-❌ Structured Collections (list, dict, set)
+🔍 v1: The Revised Extension (Retrieval)
+Once initial constraints are met, the system expands with advanced features:
 
-📁 Hidden Persistence Engine
-The application implements an automated environment setup by creating a concealed .minidiary directory. This ensures that the database remains isolated from the main workspace, maintaining a clean and professional file structure.
+📜 Iterative Listing: Displays all logs in a formatted table using for iteration.
 
-⚡ Smart ID Synchronization
-The system features a Newline-Scanning (\n) algorithm. By analyzing the raw file stream in real-time, it calculates the next unique Entry ID on-the-fly. This ensures data integrity and absolute ID consistency without consuming excessive memory.
+🔎 Keyword Search: High-speed string matching across the entire database to retrieve specific entries instantly.
 
-📝 Instant Append Protocol
-Utilizing optimized file-stream append modes, the tool ensures that every new entry is committed directly to the diary.dat file, preserving the full historical record while maintaining millisecond-level execution speeds.
+📁 Hidden Persistence: All data is stored in a concealed .minidiary directory, ensuring workspace cleanliness.
