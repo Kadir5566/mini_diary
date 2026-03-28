@@ -1,76 +1,105 @@
 """
-mini-diary v0 — Basitlestirilmis implementasyon
-Ogrenci: [Ad Soyad] ([Numara])
-
-Kapsam: Sadece init ve write komutlari.
-Sinirlamalar: Dongu ve liste henuz kullanilmadi.
+Mini-Diary v1.0 — Final Implementation
+Developer: Kadir Enes (Samsun University)
+Features: init, write (v0) | list, search (v1 - Revised)
 """
 import sys
 import os
+import time
 
 def initialize():
-    """Klasor ve bos gunluk dosyasi olusturur."""
+    """Gizli klasor ve bos gunluk dosyasi olusturur."""
     if os.path.exists(".minidiary"):
-        return "Already initialized"
+        return "[!] Already initialized."
     
     os.mkdir(".minidiary")
-    # Bos bir dosya acip hemen kapatiyoruz
-    f = open(".minidiary/diary.dat", "w")
+    f = open(".minidiary/diary.dat", "w", encoding="utf-8")
     f.close()
-    return "Initialized empty diary in .minidiary/"
+    return "[+] Initialized empty diary in .minidiary/"
 
 def write_entry(content):
-    """Yeni bir gunluk yazisi ekler. ID'yi dosya boyutuna gore hesaplar."""
-    if not os.path.exists(".minidiary"):
-        return "Error: Initialize first using 'init'"
+    """Yeni bir yazi ekler. (v0 Logic: No loops/lists)"""
+    if not os.path.exists(".minidiary/diary.dat"):
+        return "[❌] Error: Initialize first using 'init'"
     
-    # Mevcut icerigi oku (Satir sayisini saymak icin)
-    f = open(".minidiary/diary.dat", "r")
+    # ID Hesabi: Satir sayarak (Döngüsüz)
+    f = open(".minidiary/diary.dat", "r", encoding="utf-8")
     full_text = f.read()
     f.close()
     
-    # Basit ID hesabi: Kac tane yeni satir karakteri varsa o kadar yazi vardir
-    # Hic yazi yoksa ID 1 olur, varsa satir sayisi + 1 olur
     entry_id = full_text.count("\n") + 1
+    date_str = time.strftime("%Y-%m-%d") # Dinamik tarih
     
-    # Tarihi manuel ekliyoruz (Henuz datetime modulu karmaik gelebilir)
-    date_str = "2026-03-15" 
+    # Mesajdaki enter'lari temizle ki ID hesabi bozulmasin
+    clean_msg = content.replace("\n", " ")
     
-    # Veriyi dosyaya ekle (Append modu)
-    f = open(".minidiary/diary.dat", "a")
-    f.write(str(entry_id) + "|" + date_str + "|" + content + "\n")
+    # Yazma Islemi (Append mode)
+    f = open(".minidiary/diary.dat", "a", encoding="utf-8")
+    f.write(str(entry_id) + "|" + date_str + "|" + clean_msg + "\n")
     f.close()
     
-    return "Entry saved with ID: " + str(entry_id)
+    return f"[✅] Entry saved with ID: {entry_id}"
 
-def show_not_implemented(command_name):
-    """Henuz hazir olmayan komutlar icin uyari mesaji verir."""
-    return "Command '" + command_name + "' will be implemented in future weeks."
+# --- REVIZE EDILEN OZELLIKLER (v1 - Döngü Kullanıldı) ---
 
-# --- Ana Program (Arguman Yonetimi) ---
+def list_entries():
+    """Tum gunlugu listeler. (v1 Logic: Using For-Loop)"""
+    if not os.path.exists(".minidiary/diary.dat"):
+        return "[❌] Diary is empty or not initialized."
+    
+    print("\n" + "="*30)
+    print("      YOUR DIARY LOGS")
+    print("="*30)
+    
+    f = open(".minidiary/diary.dat", "r", encoding="utf-8")
+    # Döngü burada devreye giriyor
+    for line in f:
+        parts = line.strip().split("|")
+        if len(parts) == 3:
+            print(f"[{parts[0]}] {parts[1]} >> {parts[2]}")
+    f.close()
+    return "="*30
 
-# Kullanici hicbir sey yazmazsa kullanim klavuzunu goster
+def search_entries(keyword):
+    """Icerik icinde arama yapar. (v1 Logic: Using For-Loop)"""
+    print(f"\n[🔍] Searching for: '{keyword}'...")
+    found = False
+    
+    f = open(".minidiary/diary.dat", "r", encoding="utf-8")
+    for line in f:
+        if keyword.lower() in line.lower():
+            parts = line.strip().split("|")
+            print(f"-> Found in ID [{parts[0]}]: {parts[2]}")
+            found = True
+    f.close()
+    
+    if not found:
+        return "[!] No matches found."
+    return "[✔] Search complete."
+
+# --- Ana Program (CLI Manager) ---
+
 if len(sys.argv) < 2:
-    print("Usage: python diary.py <command> [args]")
+    print("\n--- Mini-Diary CLI ---")
+    print("Commands: init, write \"msg\", list, search \"keyword\"")
 
 elif sys.argv[1] == "init":
     print(initialize())
 
 elif sys.argv[1] == "write":
-    # write komutu icin mesaj girilip girilmedigini kontrol et
     if len(sys.argv) < 3:
         print("Usage: python diary.py write \"Your message\"")
     else:
         print(write_entry(sys.argv[2]))
 
 elif sys.argv[1] == "list":
-    print(show_not_implemented("list"))
+    print(list_entries())
 
-elif sys.argv[1] == "read":
-    print(show_not_implemented("read"))
-
-elif sys.argv[1] == "delete":
-    print(show_not_implemented("delete"))
+elif sys.argv[1] == "search":
+    if len(sys.argv) < 3:
+        print("Usage: python diary.py search \"keyword\"")
+    else:
+        print(search_entries(sys.argv[2]))
 
 else:
-    print("Unknown command: " + sys.argv[1])
+    print(f"Unknown command: {sys.argv[1]}")
