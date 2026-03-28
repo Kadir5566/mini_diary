@@ -1,3 +1,15 @@
+# [GÜNCELLEME 2 - v0]: Akıllı Kayıt Sistemi
+# - Döngü/Liste kullanmadan (No-Loop) otomatik ID sayma ve dinamik tarih damgası eklendi.
+# - 'encoding="utf-8"' ve '.replace("\n", " ")' ile veri güvenliği sağlandı.
+
+# [GÜNCELLEME 3 - v1]: Yinelemeli Listeleme
+# - 'for line in f' döngüsü ile tüm kayıtları satır satır okuma özelliği eklendi.
+# - '.split("|")' yöntemiyle ID, Tarih ve Mesaj ayrıştırılarak tablo formatında sunuldu.
+
+# [GÜNCELLEME 4 - v1]: Anahtar Kelime Arama
+# - Tüm günlük içeriğinde kelime bazlı tarama (Keyword Search) motoru kuruldu.
+# - '.lower()' metodu ile büyük/küçük harf duyarsız, esnek arama desteği sağlandı.
+
 """
 Mini-Diary v1.0 — Final Implementation
 Developer: Kadir Enes (Samsun University)
