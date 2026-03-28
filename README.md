@@ -1,8 +1,3 @@
-Tamam, Bapi'yi külliyen sildik attık, mevzusu bile geçmiyor. Sinir bozucu olduysa direkt çöpe.
-
-Şu an elimizde kapı gibi Mini-Diary (v0) var. Berke’ninkinden daha "heavy", daha teknik ve daha ciddi duran o README’yi, Bapi lafını tamamen temizleyerek, sadece Mini-Diary odaklı ve senin "babapiro" ağırlığına yakışacak şekilde revize ettim.
-
-Kendi repondaki README.md dosyasına direkt bunu yapıştır:
 
 📔 Mini-Diary (v0)
 A Constraint-Driven CLI Architecture for Persistent Logging
