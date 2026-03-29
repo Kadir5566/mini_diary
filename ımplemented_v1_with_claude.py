@@ -1,3 +1,12 @@
+# [GÜNCELLEME 5 - v2]: Crash-Safe Refactor
+# - Tüm open()/close() çağrıları with open() ile değiştirildi.
+#   Hata olsa da olmasa da dosya her durumda otomatik kapanır.
+# - write_entry() içine atomik yazma eklendi: önce diary.tmp'ye yaz,
+#   sonra os.replace() ile taşı. Dosya asla yarım/bozuk kalmaz.
+# - Tüm fonksiyonlar try-except ile sarıldı.
+#   Kullanıcı çökme yerine anlaşılır hata mesajı görür.
+#-------------------------------------------------------------------------------------------
+
 # [GÜNCELLEME 2 - v0]: Akıllı Kayıt Sistemi
 # - Döngü/Liste kullanmadan (No-Loop) otomatik ID sayma ve dinamik tarih damgası eklendi.
 # - 'encoding="utf-8"' ve '.replace("\n", " ")' ile veri güvenliği sağlandı.
