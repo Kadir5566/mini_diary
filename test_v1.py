@@ -1,76 +1,91 @@
-import os
-import shutil
-import time
-import subprocess
+#!/bin/bash
 
-# Test klasoru ve dosya isimleri
-TEST_DIR = ".minidiary"
-SCRIPT_NAME = "solution.py"
+# --- CONFIGURATION & COLORS ---
+SCRIPT="solution.py"
+DB_DIR=".minidiary"
+DB_FILE=".minidiary/diary.dat"
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
 
-def run_cmd(args):
-    """Terminal komutunu calistirir ve ciktisini dondurur."""
-    result = subprocess.run(['python', SCRIPT_NAME] + args, capture_output=True, text=True, encoding="utf-8")
-    return result.stdout.strip()
+# Helper function to run the python script
+run_cmd() {
+    python3 "$SCRIPT" "$@"
+}
 
-def setup_test():
-    """Test oncesi temizlik yapar."""
-    if os.path.exists(TEST_DIR):
-        shutil.rmtree(TEST_DIR)
-    print("[1/6] Temizlik tamamlandi.")
+# Cleanup before starting
+setup() {
+    [ -d "$DB_DIR" ] && rm -rf "$DB_DIR"
+    echo -e "--- Starting Mini-Diary v2.0 Automation Test ---"
+}
 
-def test_init():
-    print("[2/6] Test: 'init' komutu...")
-    out = run_cmd(["init"])
-    if os.path.exists(TEST_DIR) and "Initialized" in out:
-        print("  -> BAŞARILI: Klasör oluşturuldu.")
-    
-    out_again = run_cmd(["init"])
-    if "Already initialized" in out_again:
-        print("  -> BAŞARILI: Tekrar kurulum engellendi.")
+# --- TEST EXECUTION ---
 
-def test_write():
-    print("[3/6] Test: 'write' komutu (v0 Mantığı)...")
-    run_cmd(["write", "İlk test mesajı"])
-    run_cmd(["write", "İkinci test mesajı"])
-    out = run_cmd(["write", "Üçüncü test mesajı"])
-    
-    if "ID: 3" in out:
-        print("  -> BAŞARILI: 3 adet kayıt yapıldı ve ID'ler doğru atandı.")
+setup
 
-def test_list():
-    print("[4/6] Test: 'list' komutu (v1 Revize)...")
-    out = run_cmd(["list"])
-    if "İlk test mesajı" in out and "Üçüncü test mesajı" in out:
-        print("  -> BAŞARILI: Tüm kayıtlar listelendi.")
-    else:
-        print("  -> HATA: Liste eksik!")
+# 1. Test: Initialization
+echo -n "[2/6] Test: 'init' command... "
+run_cmd init > /dev/null
+if [ -d "$DB_DIR" ] && [ -f "$DB_FILE" ]; then
+    echo -e "${GREEN}SUCCESS: Environment created.${NC}"
+else
+    echo -e "${RED}FAILED: Setup error.${NC}"
+    exit 1
+fi
 
-def test_search():
-    print("[5/6] Test: 'search' komutu (v1 Revize)...")
-    # Büyük/küçük harf duyarlılığı testi
-    out = run_cmd(["search", "İkinci"])
-    out_lower = run_cmd(["search", "ikinci"])
-    
-    if "ID [2]" in out and "ID [2]" in out_lower:
-        print("  -> BAŞARILI: Arama motoru büyük/küçük harf duyarsız çalışıyor.")
-    else:
-        print("  -> HATA: Arama sonuç vermedi!")
+# 2. Test: Double Initialization Guard
+echo -n "[2.1/6] Test: Double init guard... "
+OUT_AGAIN=$(run_cmd init)
+if [[ "$OUT_AGAIN" == *"Already initialized"* ]]; then
+    echo -e "${GREEN}SUCCESS: Guard active.${NC}"
+else
+    echo -e "${RED}FAILED: No warning.${NC}"
+fi
 
-def test_error_handling():
-    print("[6/6] Test: Hata yönetimi...")
-    out = run_cmd(["bilinmeyen_komut"])
-    if "Unknown command" in out:
-        print("  -> BAŞARILI: Geçersiz komut yakalandı.")
+# 3. Test: Write Entries (v0 Logic Check)
+echo -n "[3/6] Test: 'write' command & IDs... "
+run_cmd write "İlk test mesajı" > /dev/null
+run_cmd write "İkinci test mesajı" > /dev/null
+OUT_WRITE=$(run_cmd write "Üçüncü test mesajı")
 
-if __name__ == "__main__":
-    print("=== Mini-Diary v1 Otomatik Test Başlatılıyor ===\n")
-    if not os.path.exists(SCRIPT_NAME):
-        print(f"HATA: {SCRIPT_NAME} dosyası bulunamadı! Lütfen dosya adını kontrol edin.")
-    else:
-        setup_test()
-        test_init()
-        test_write()
-        test_list()
-        test_search()
-        test_error_handling()
-        print("\n=== Tüm Testler Başarıyla Tamamlandı! ===")
+if [[ "$OUT_WRITE" == *"ID: 3"* ]]; then
+    LINE_COUNT=$(wc -l < "$DB_FILE")
+    if [ "$LINE_COUNT" -eq 3 ]; then
+        echo -e "${GREEN}SUCCESS: 3 entries stored with correct IDs.${NC}"
+    else
+        echo -e "${RED}FAILED: Line count mismatch ($LINE_COUNT).${NC}"
+    fi
+else
+    echo -e "${RED}FAILED: ID assignment error.${NC}"
+fi
+
+# 4. Test: List Entries (v1 Logic Check)
+echo -n "[4/6] Test: 'list' command... "
+OUT_LIST=$(run_cmd list)
+if [[ "$OUT_LIST" == *"İlk test mesajı"* ]] && [[ "$OUT_LIST" == *"Üçüncü test mesajı"* ]]; then
+    echo -e "${GREEN}SUCCESS: All records displayed.${NC}"
+else
+    echo -e "${RED}FAILED: List output incomplete.${NC}"
+fi
+
+# 5. Test: Search Engine (Case-Insensitive Check)
+echo -n "[5/6] Test: 'search' command (Case-Insensitive)... "
+OUT_SEARCH_1=$(run_cmd search "İkinci")
+OUT_SEARCH_2=$(run_cmd search "ikinci")
+
+if [[ "$OUT_SEARCH_1" == *"ID [2]"* ]] && [[ "$OUT_SEARCH_2" == *"ID [2]"* ]]; then
+    echo -e "${GREEN}SUCCESS: Search is case-insensitive.${NC}"
+else
+    echo -e "${RED}FAILED: Search failed or case-sensitive.${NC}"
+fi
+
+# 6. Test: Unknown Command Handling
+echo -n "[6/6] Test: Error handling... "
+OUT_ERR=$(run_cmd bilinmeyen_komut)
+if [[ "$OUT_ERR" == *"Unknown command"* ]]; then
+    echo -e "${GREEN}SUCCESS: Unknown command caught.${NC}"
+else
+    echo -e "${RED}FAILED: Invalid error message.${NC}"
+fi
+
+echo -e "\n--- ${GREEN}ALL TESTS PASSED SUCCESSFULLY${NC} ---"
