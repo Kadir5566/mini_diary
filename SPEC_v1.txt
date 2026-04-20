@@ -54,7 +54,7 @@ File: .minidiary/diary.dat
 Encoding: UTF-8 (Full Turkish Character Support)
 Format: id|date|content
 Example:
-1|2026-03-28|GitHub odevini bitirdik, babapiroyuz.
+1|2026-03-28|GitHub odevini bitirdik.
 2|2026-03-28|Döngü yasağını v1 revizesiyle aştık.
 
 ========================================
